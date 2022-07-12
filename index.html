@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      padding: 0px;
+      margin: 0px;
+    }
+
+    .conatiner {
+      background-color: aqua;
+      height: 80vh;
+      position: relative;
+    }
+
+  
+
+    .control {
+      margin-top: 50px;
+      overflow: hidden;
+
+
+    }
+
+    .control #labelAngle {
+      margin-left: 100px;
+    }
+
+    .control #angle {
+      margin-top: 5px;
+    }
+
+    #canvas {
+      height: 70vh;
+      width: 100%;
+      background-color: aqua;
+    }
+
+    .button-controll {
+      margin-left: 100px;
+      margin-top: 30px;
+    }
+
+    .button-controll input {
+      padding: 3px 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <canvas id="canvas">
+
+  </canvas>
+  <div class="control">
+    <label id="labelAngle"> Angle : </label> <span id="angleValue">45</span> <input id="angle" onclick="changeAngle()"
+      type="range" step="1" min="0" max="90" />
+    <label id="labelSpeed"> Speed : </label> <span id="speedValue">.5</span> <input id="speed" onclick="changeSpeed()"
+      type="range" step=".1" min="0" max="1" />
+    <div class="button-controll">
+      <input type="button" id="start" value="Start" />
+      <input type="button" id="reset" value="Reset" />
+    </div>
+
+  </div>
+
+  <script>
+    let angle = document.getElementById("angle");
+  
+    let speed = document.getElementById("speed");
+    let canvas = document.getElementById('canvas')
+    let draw = canvas.getContext('2d')
+    let t = 0
+    let X0 = 5;
+    let Y0 = canvas.height-2
+    let X = X0
+    let Y = Y0;
+    let g = .005;
+    let oldTimeStamp = 0.;
+    let secandPassed = 0.;
+    let animationSpeed = 100
+    let run = false;
+    let start = document.getElementById("start")
+    start.addEventListener("click", () => {
+      if (!run) {
+        start.value = "Stop"
+        X = X0;
+        Y = Y0;
+        t = 0;
+      }
+      else {
+        start.value = "Start"
+      }
+
+      run = !run
+    })
+
+    function changeAngle() {
+
+      document.getElementById("angleValue").innerHTML = angle.value
+
+    }
+    function changeSpeed() {
+
+      document.getElementById("speedValue").innerHTML = speed.value
+
+    }
+
+    document.getElementById("reset").addEventListener("click", () => {
+    
+      draw.clearRect(0,0 , canvas.width, canvas.height);
+      speed.value=.5;
+      angle.value=45
+      document.getElementById("speedValue").innerHTML = speed.value
+      document.getElementById("angleValue").innerHTML = angle.value
+    
+    })
+
+    window.onload = init()
+
+    function init() {
+      window.requestAnimationFrame(animationLoop)
+    }
+    function animationLoop(timeStamp) {
+      secandPassed = (timeStamp - oldTimeStamp) / 1000;
+      oldTimeStamp = timeStamp
+      update()
+      drawing()
+      window.requestAnimationFrame(animationLoop)
+    }
+
+    function update() {
+      if (run) {
+        t += animationSpeed * secandPassed
+        X = speed.value * Math.cos(-angle.value * Math.PI / 180) * t + X0
+        Y = .5 * g * t * t + speed.value * Math.sin(-angle.value * Math.PI / 180) * t + Y0
+
+      }
+    }
+    // draw the projectile
+    function drawing() {
+
+      draw.beginPath()
+      draw.arc(X, Y, 1, 0, 2* Math.PI)
+      draw.stroke()
+
+    }
+
+  </script>
+</body>
+
+</html>
